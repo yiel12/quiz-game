@@ -1,7 +1,10 @@
-from quiz import Quiz        # quiz.py의 Quiz 클래스를 가져옴
+from quiz import Quiz
 
 class QuizGame:
     def __init__(self):
-        self.quizzes = []    # 여러 문제를 담을 리스트
-        self.score = 0       # 점수
+        self.quizzes = []
+        self.score = 0
+
+    def add_quiz(self, quiz):        # 문제 추가 메서드
+        self.quizzes.append(quiz)    # 리스트에 문제 하나 추가
         
