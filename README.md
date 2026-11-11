@@ -150,3 +150,7 @@ clone 전후의 폴더, clone 완료 화면, 별도 복제본의 commit/push 결
 Clone/pull 실습을 완료했습니다.
 
 Clone 실습: 별도 폴더에 저장소를 복제했습니다.
+
+## 📸 Git 기록 증빙
+
+![Git 커밋 및 병합 기록](docs/screenshots/git-history.png)
