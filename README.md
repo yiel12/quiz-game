@@ -47,14 +47,93 @@ python main.py
 | `main.py` | 프로그램 시작점 (메뉴 실행) |
 | `quiz.py` | Quiz 클래스 (문제 1개 담당) |
 | `quiz_game.py` | QuizGame 클래스 (게임 전체 관리) |
-| `state.json` | 퀴즈 데이터 및 점수 저장 파일 |
+| `state.json` | 퀴즈 데이터 및 최고 점수를 저장하는 파일 (실행 후 생성) |
+| `state.json.bak` | 다음 저장 전의 데이터를 보관하는 자동 백업 파일 (실행 후 생성) |
+| `state.json.tmp` | 저장 도중 사용하는 임시 파일 (정상 저장 후 사라짐) |
 
 ## 💾 데이터 파일 설명 (state.json)
 
-- 퀴즈 목록과 최고 점수를 **UTF-8 인코딩**의 JSON 형식으로 저장합니다.
+- 퀴즈 목록과 최고 점수를 **UTF-8 인코딩**의 JSON 형식으로 저장합니다. JSON은 사람이 열어 내용을 읽기 쉽고, 퀴즈마다 문제·선택지·정답을 묶어 구조적으로 관리하기 편합니다.
 - 프로그램 실행 시 자동으로 불러오고, 변경 시 자동으로 저장됩니다.
 - 파일이 **없으면** 기본 퀴즈 데이터로 시작합니다.
-- 파일이 **손상되었으면** 안내 메시지를 출력하고 기본 데이터로 복구합니다.
+- 저장할 때 기존 `state.json`을 `state.json.bak`으로 복사한 뒤 임시 파일을 새 저장 파일로 바꿉니다. 따라서 첫 저장 이후에는 직전 저장본이 백업에 남습니다.
+- `state.json`을 읽을 수 없으면 백업을 읽어 복구를 시도합니다. 백업도 없거나 손상되면 기본 데이터로 시작합니다. 복구할 수 없는 원본은 자동으로 삭제하지 않습니다.
+- JSON은 파일 전체를 읽고 다시 쓰므로 데이터가 아주 커지거나 여러 사용자가 동시에 수정하면 느려지거나 덮어쓰기 문제가 생길 수 있습니다. 그런 경우에는 SQLite 같은 데이터베이스를 고려할 수 있습니다.
+
+예시 구조:
+
+```json
+{
+  "quizzes": [
+    { "question": "질문", "choices": ["보기1", "보기2", "보기3", "보기4"], "answer": 2 }
+  ],
+  "best_score": 1
+}
+```
+
+`quizzes`는 퀴즈 객체들의 목록이며, 각 퀴즈 안에 질문·보기 목록·정답을 함께 둡니다. 이렇게 하면 퀴즈별 데이터를 하나로 묶어 읽고 저장하기 쉽습니다. `best_score`는 최고 정답 개수입니다.
+
+## 🧱 코드 역할과 구조
+
+- `Quiz` 클래스는 질문 하나와 선택지, 정답을 한 객체에 묶고 문제 출력과 정답 확인을 담당합니다.
+- `QuizGame` 클래스는 퀴즈 목록·점수와 저장/불러오기, 게임 진행을 한곳에서 관리합니다. 관련 데이터와 기능을 함께 두면 기능을 추가하거나 고칠 때 역할을 찾기 쉽습니다. 단순 함수만 사용할 때보다 여러 상태와 동작을 묶어 관리하기 편합니다.
+- `input_number()`는 숫자 입력의 공백 제거, 숫자 여부, 허용 범위를 검사합니다. 파일 입출력은 `QuizGame.load()`와 `QuizGame.save()`가 담당합니다. 입력 검증과 파일 입출력을 나누면 입력 규칙이나 저장 방식을 바꿀 때 서로 관계없는 코드를 덜 건드릴 수 있습니다.
+
+## 🌿 Git 기록과 작업 방식
+
+- 원격 저장소: [https://github.com/yiel12/quiz-game](https://github.com/yiel12/quiz-game)
+- 현재 원격에서 확인되는 브랜치: `main` 한 개
+- 확인 시점의 기록: 총 15개 커밋, 병합 커밋 1개 (`08d69e8`, `Merge: README 충돌 해결 (로컬 버전 유지)`). 이 병합 커밋에는 README 충돌을 해결한 기록이 있습니다.
+- 확인된 커밋 그래프에는 `main`과 병합된 커밋 흐름이 있으나, 현재 원격 브랜치 목록만으로는 병합된 작업 브랜치의 이름을 확인할 수 없습니다. 새 기능은 별도 브랜치에서 작업하고 검토 후 `main`에 병합하는 것을 권장합니다. 브랜치는 기능별 작업을 나누고, 병합은 검토가 끝난 변경을 기본 브랜치에 합치는 과정입니다.
+- 커밋은 한 가지 작은 변경 단위로 만들고, 변경 종류와 내용을 드러내는 메시지를 씁니다. 예: `Feat: 퀴즈 삭제 기능 추가`, `Fix: 손상된 저장 파일 복구`, `Docs: README 백업 설명 추가`, `Refactor: 저장 로직 분리`.
+- 기록 확인: `git log --oneline --graph --decorate --all` (병합만 보려면 `git log --oneline --merges`).
+
+## 📥 clone / pull 실습 및 증빙
+
+아래 실습은 별도 복제본에서 README를 수정해 push한 뒤, 원래 작업 폴더에서 `pull`로 가져오는 흐름입니다. `pull`하기 전에 원래 폴더의 변경사항을 저장하거나 커밋하세요. `quiz-game` 폴더 경로는 본인 컴퓨터의 실제 위치로 바꿉니다.
+
+1. PowerShell에서 복제본을 만들 위치로 이동한 다음 실행합니다:
+
+```powershell
+git clone https://github.com/yiel12/quiz-game.git quiz-game-clone-practice
+cd quiz-game-clone-practice
+```
+
+2. 복제본 README 끝에 실습 문장을 추가하고 커밋·push합니다:
+
+```powershell
+Add-Content README.md "`nClone/pull 실습을 완료했습니다."
+git add README.md
+git commit -m "Docs: clone pull 실습 기록 추가"
+git push origin main
+```
+
+3. 새 PowerShell 창을 열고 기존 작업 폴더로 이동합니다. 아래 경로를 실제 경로로 바꿔 입력한 뒤 pull합니다:
+
+```powershell
+cd "C:\실제\경로\quiz-game"
+git pull origin main
+```
+
+4. README에 실습 문장이 들어왔는지 확인합니다:
+
+```powershell
+Select-String -Path README.md -Pattern "Clone/pull 실습"
+```
+
+clone 전후의 폴더, clone 완료 화면, 별도 복제본의 commit/push 결과, 기존 폴더의 pull 결과와 확인 결과를 캡처해 `docs/screenshots/`에 저장하고 제출 자료에 첨부하세요. 캡처 파일은 직접 실습한 뒤 추가해야 합니다.
+
+## 🧭 요구사항이 바뀌면 확인할 파일
+
+| 변경 내용 | 먼저 확인할 파일/함수 |
+|---|---|
+| 시작 메뉴나 메뉴 선택 | `main.py`의 `show_menu()`, `main()` |
+| 기본 퀴즈 내용 | `main.py`의 `add_default_quizzes()` |
+| 퀴즈 입력과 입력 검증 | `main.py`의 `add_quiz_by_user()`, `quiz_game.py`의 `input_number()` |
+| 문제 표시/정답 판정 | `quiz.py`의 `Quiz.show()`, `Quiz.check()` |
+| 게임 진행/점수 | `quiz_game.py`의 `QuizGame.run()`, `show_result()` |
+| 저장 형식, 자동 백업, 복구 | `quiz_game.py`의 `QuizGame.save()`, `QuizGame.load()` |
+| 사용 방법과 설계 설명 | `README.md` |
 
 ## 🛠️ 개발 환경
 
