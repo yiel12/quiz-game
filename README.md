@@ -147,5 +147,4 @@ clone 전후의 폴더, clone 완료 화면, 별도 복제본의 commit/push 결
 
 
 브랜치 병합 실습을 완료했습니다.
-
 Clone/pull 실습을 완료했습니다.
