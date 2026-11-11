@@ -151,6 +151,10 @@ Clone/pull 실습을 완료했습니다.
 
 Clone 실습: 별도 폴더에 저장소를 복제했습니다.
 
-## 📸 Git 기록 증빙
+## 📸 Git 작업 증빙
 
-![Git 커밋 및 병합 기록](docs/screenshots/git-history.png)
+![clone 결과](docs/screenshots/clone.png)
+![복제본 push 결과](docs/screenshots/push.png)
+![원래 폴더 pull 결과](docs/screenshots/pull.png)
+![PR 병합 결과](docs/screenshots/PR%20병합.png)
+![커밋 및 병합 그래프](docs/screenshots/git-history.png)
