@@ -158,3 +158,21 @@ Clone 실습: 별도 폴더에 저장소를 복제했습니다.
 ![원래 폴더 pull 결과](docs/screenshots/pull.png)
 ![PR 병합 결과](docs/screenshots/PR%20병합.png)
 ![커밋 및 병합 그래프](docs/screenshots/git-history.png)
+
+## 🖥️ 프로그램 실행 증빙
+
+![메뉴 화면](docs/screenshots/menu.png)
+![퀴즈 추가](docs/screenshots/add-quiz.png)
+![퀴즈 목록](docs/screenshots/quiz-list.png)
+![퀴즈 플레이 결과](docs/screenshots/play-result.png)
+![최고 점수](docs/screenshots/score.png)
+
+## 🌿 브랜치 및 병합 기록
+
+- 기본 브랜치: `main`
+- 작업 브랜치: `backup-recovery`
+- `backup-recovery`에서 작업한 뒤 Pull Request로 `main`에 병합했습니다.
+- 병합 커밋: `fa44537` (PR #1), `501292f` (PR #2)
+- `git branch -a`와 `git log --oneline --graph --decorate --all`로 브랜치와 병합 이력을 확인할 수 있습니다.
+
+![브랜치별 커밋 그래프](docs/screenshots/branch-history.png)
